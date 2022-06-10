@@ -20,7 +20,7 @@ api.add_resource(IndexEntity, '/index' )
 
 # cria o banco de dados e tabelas do anrquivo 'entity.py'
 @app.before_first_request
-def innit_db():
+def init_db():
 	db.create_all()
 
 if __name__ == '__main__':
