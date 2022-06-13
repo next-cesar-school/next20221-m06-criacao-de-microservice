@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource, Api
-from app.entity import ProjectEntity, UsersEntity
+from app.entity import ProjectEntity, UsersEntity, CostCenterEntity
 
 def setup_route(app):
 
@@ -106,32 +106,71 @@ def setup_route(app):
 				user.save_user()
 			except:
 				# Internal Server Error
-				return {'message': 'An internal error occurred trying to save User.'}, 500
-			return user.json()
+				return {'message': 'An internal error occurred trying to delete User.'}, 500
+			return{'message': 'User deleted.'}
+
+
+	class Centers(Resource):
+
+		def get(self):
+			return {'Cost Centers': [center.json() for center in CostCenterEntity.query.all()]}
+
+		def post(self):
+			data = request.get_json()
+			center = CostCenterEntity(**data)
+			try:
+				center.save_center()
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to save cost center.'}, 500
+			return center.json()
+
+	class Center(Resource):
+
+		def get(self, id):
+			center = CostCenterEntity.find_center(id)
+			if center:
+				return center.json()
+			return {'message': 'Cost Center not found.'}, 404
+
+		def post(self, id):
+			if CostCenterEntity.find_center(id):
+				# Bad request
+				return {'message': 'Cost center sector {} already exists.'.format(id)}, 400
+
+			data = request.get_json()
+			center = CostCenterEntity(**data)
+			center.id = id
+			try:
+				center.save_center()
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
+			return center.json()
 
 		def put(self, id):
 			data = request.get_json()
-			user = UsersEntity.find_user(id)
-			if user:
-				user.update_user(**data)
+			center = CostCenterEntity.find_center(id)
+			if center:
+				center.update_center(**data)
 				try:
-					user.save_user()
+					center.save_center()
 				except:
 					# Internal Server Error
-					return {'message': 'An internal error occurred trying to save User.'}, 500
-				return user.json(), 200
-			return {'message': 'user not found.'}, 404
+					return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
+				return center.json(), 200
+			return {'message': 'Cost Center not found.'}, 404
 
 	def delete(self, id):
-			user = UsersEntity.find_user(id)
-			if user:
+			center = CostCenterEntity.find_center(id)
+			if center:
 				try:
-					user.delete_user()
+					center.delete_center()
 				except:
 					# Internal Server Error
-					return {'message': 'An internal error occurred trying to delete User.'}, 500
-				return{'message': 'User deleted.'}
-			return {'message': 'User not found.'}, 404
+					return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
+				return{'message': 'Cost Center deleted.'}
+			return {'message': 'Cost Center not found.'}, 404
 
 	api = Api(app)
 
@@ -140,3 +179,5 @@ def setup_route(app):
 	api.add_resource(Project, '/projects/<int:id>')
 	api.add_resource(Users, '/users')
 	api.add_resource(User, '/users/<int:id>')
+	api.add_resource(Centers, '/costcenters')
+	api.add_resource(Center, '/costcenters/<int:id>')
