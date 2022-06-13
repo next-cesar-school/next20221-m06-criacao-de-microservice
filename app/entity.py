@@ -1,6 +1,4 @@
 from app.config_db import db
-from datetime import date
-from enum import Enum
 from sqlalchemy import ForeignKey
 
 class ProjectEntity(db.Model):
@@ -8,17 +6,17 @@ class ProjectEntity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100))
-    centro_custo = db.Column(db.String(50))
+    id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
     data_inicio = db.Column(db.String(10))
     data_fim = db.Column(db.String(10))
-    status = db.Column(db.Enum('iniciado', 'on-hold', 'finalizado'))
+    status = db.Column(db.Enum('iniciado', 'on-hold', 'finalizado', 'em aprovação'))
     flag = db.Column(db.Enum('vermelho', 'amarelo', 'verde'))
     id_gerente = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
 
     
-    def __init__(self, nome, centro_custo, data_inicio, data_fim, status, flag, id_gerente):
+    def __init__(self, nome, id_centro_custo, data_inicio, data_fim, status, flag, id_gerente):
         self.nome = nome
-        self.centro_custo = centro_custo
+        self.id_centro_custo = id_centro_custo
         self.data_inicio = data_inicio
         self.data_fim = data_fim
         self.status = status
@@ -71,9 +69,9 @@ class UsersEntity(db.Model):
     ultimo_nome = db.Column(db.String(50))
     data_nascimento = db.Column(db.String(10))
     cargo = db.Column(db.String(10))
-    matricula = db.Column(db.String(50))
+    matricula = db.Column(db.String(50), unique=True)
     status = db.Column(db.String(50))
-    id_centro_custo = db.Column(db.Integer, ForeignKey('centro_de_custo.id'), nullable=False)
+    id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
 
     gerente = db.relationship (ProjectEntity)
 
@@ -126,16 +124,16 @@ class UsersEntity(db.Model):
 
 # Centro de Custo Entity
 class CostCenterEntity(db.Model):
-    __tablename__ = 'centro_de_custo'
+    __tablename__ = 'cost_center'
 
     id = db.Column(db.Integer, primary_key=True)
     setor = db.Column(db.String(100))
 
-    centro = db.relationship (UsersEntity)
+    user = db.relationship (UsersEntity)
+    project = db.relationship (ProjectEntity)
 
     
-    def __init__(self, id, setor):
-        self.id = id
+    def __init__(self, setor):
         self.setor = setor
 
     def json(self):

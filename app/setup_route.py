@@ -134,7 +134,6 @@ def delete(self, id):
 		return {'message': 'User not found.'}, 404
 
 
-
 class Centers(Resource):
 
 	def get(self):
