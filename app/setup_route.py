@@ -42,6 +42,8 @@ def setup_route(app):
 			project.id = id
 			try:
 				project.save_project()
+			except AttributeError:
+				return {'message': 'Value Error.'}, 404
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save project.'}, 500
@@ -79,6 +81,10 @@ def setup_route(app):
 		def post(self):
 			data = request.get_json()
 			user = UsersEntity(**data)
+
+			if UsersEntity.find_user_matricula(user.matricula):
+				return {f'message': 'User matricula {user.matricula} already exists.'}, 400
+
 			try:
 				user.save_user()
 			except:
@@ -98,9 +104,15 @@ def setup_route(app):
 			if UsersEntity.find_user(id):
 				# Bad request
 				return {'message': 'User id {} already exists.'.format(id)}, 400
+			
+				
 
 			data = request.get_json()
 			user = UsersEntity(**data)
+
+			if UsersEntity.find_user_matricula(user.matricula):
+				return {'message': 'User matricula {} already exists.'.format(user.matricula)}, 400
+
 			user.id = id
 			try:
 				user.save_user()

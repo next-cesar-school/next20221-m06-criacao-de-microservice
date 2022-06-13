@@ -27,7 +27,7 @@ class ProjectEntity(db.Model):
         return {
             'id': self.id,
             'nome': self.nome,
-            'centro_custo': self.centro_custo,
+            'id_centro_custo': self.id_centro_custo,
             'data_inicio': self.data_inicio,
             'data_fim': self.data_fim,
             'status': self.status,
@@ -102,6 +102,15 @@ class UsersEntity(db.Model):
         user = cls.query.filter_by(id=id).first()
         if user:
             return user
+        return None
+
+    @classmethod
+    def find_user_matricula(cls, matricula):
+        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
+        user_matricula = cls.query.filter_by(matricula=matricula).first()
+        
+        if user_matricula:
+            return user_matricula
         return None
     
     def save_user(self):
