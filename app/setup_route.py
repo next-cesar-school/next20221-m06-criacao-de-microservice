@@ -1,5 +1,5 @@
 from flask import request, flash, url_for, redirect, render_template, Response
-from app.entity import ProjectEntity, UsersEntity
+from app.entity import ProjectEntity, UsersEntity, CostCenterEntity
 from flask_restful import Resource
 import json
 
@@ -74,7 +74,7 @@ class Project(Resource):
 class Users(Resource):
 
 	def get(self):
-		return {'users': [project.json() for project in UsersEntity.query.all()]}
+		return {'users': [user.json() for user in UsersEntity.query.all()]}
 
 	def post(self):
 		data = request.get_json()
@@ -83,7 +83,7 @@ class Users(Resource):
 			user.save_user()
 		except:
 			# Internal Server Error
-			return {'message': 'An internal error occurred trying to save project.'}, 500
+			return {'message': 'An internal error occurred trying to save User.'}, 500
 		return user.json()
 
 class User(Resource):
@@ -132,3 +132,67 @@ def delete(self, id):
 				return {'message': 'An internal error occurred trying to delete User.'}, 500
 			return{'message': 'User deleted.'}
 		return {'message': 'User not found.'}, 404
+
+
+
+class Centers(Resource):
+
+	def get(self):
+		return {'Cost Centers': [center.json() for center in CostCenterEntity.query.all()]}
+
+	def post(self):
+		data = request.get_json()
+		center = CostCenterEntity(**data)
+		try:
+			center.save_center()
+		except:
+			# Internal Server Error
+			return {'message': 'An internal error occurred trying to save cost center.'}, 500
+		return center.json()
+
+class Center(Resource):
+
+	def get(self, id):
+		center = CostCenterEntity.find_center(id)
+		if center:
+			return center.json()
+		return {'message': 'Cost Center not found.'}, 404
+
+	def post(self, id):
+		if CostCenterEntity.find_center(id):
+			# Bad request
+			return {'message': 'Cost center sector {} already exists.'.format(id)}, 400
+
+		data = request.get_json()
+		center = CostCenterEntity(**data)
+		center.id = id
+		try:
+			center.save_center()
+		except:
+			# Internal Server Error
+			return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
+		return center.json()
+
+	def put(self, id):
+		data = request.get_json()
+		center = CostCenterEntity.find_center(id)
+		if center:
+			center.update_center(**data)
+			try:
+				center.save_center()
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
+			return center.json(), 200
+		return {'message': 'Cost Center not found.'}, 404
+
+def delete(self, id):
+		center = CostCenterEntity.find_center(id)
+		if center:
+			try:
+				center.delete_center()
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
+			return{'message': 'Cost Center deleted.'}
+		return {'message': 'Cost Center not found.'}, 404
