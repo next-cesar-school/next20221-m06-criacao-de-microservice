@@ -1,7 +1,6 @@
-from app.config_db import db
-from datetime import date
-from enum import Enum
 from sqlalchemy import ForeignKey
+from app.config_db import db
+# from datetime import date
 
 class ProjectEntity(db.Model):
     __tablename__ = 'projects'
@@ -14,7 +13,6 @@ class ProjectEntity(db.Model):
     status = db.Column(db.String(50))
     flag = db.Column(db.Enum('vermelho', 'amarelo', 'verde'))
     id_gerente = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
-
     
     def __init__(self, nome, centro_custo, data_inicio, data_fim, status, flag, id_gerente):
         self.nome = nome
