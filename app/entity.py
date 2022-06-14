@@ -153,7 +153,7 @@ class CostCenterEntity(db.Model):
     
     @classmethod
     def find_center(cls, id):
-        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
+        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro) ,,
         center = cls.query.filter_by(id=id).first()
         if center:
             return center
