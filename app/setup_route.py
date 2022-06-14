@@ -26,6 +26,7 @@ def setup_route(app):
 
 
 	class Project(Resource):
+
 		def get(self, id):
 			project = ProjectEntity.find_project(id)
 			if project:
@@ -33,13 +34,18 @@ def setup_route(app):
 			return {'message': 'Project not found.'}, 404
 
 		def post(self, id):
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message':f'Oops! This ID {id} is not valid'}, 400
 			if ProjectEntity.find_project(id):
 				# Bad request
 				return {'message': 'Project id {} already exists.'.format(id)}, 400
-
+			
 			data = request.get_json()
 			project = ProjectEntity(**data)
 			project.id = id
+
 			try:
 				project.save_project()
 			except:
@@ -79,12 +85,18 @@ def setup_route(app):
 		def post(self):
 			data = request.get_json()
 			user = UsersEntity(**data)
+
+			if UsersEntity.find_user_matricula(user.matricula):
+				return {'message': f'User matricula {user.matricula} already exists.'}, 400
+
 			try:
 				user.save_user()
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save User.'}, 500
 			return user.json()
+
+		
 
 	class User(Resource):
 
@@ -95,10 +107,14 @@ def setup_route(app):
 			return {'message': 'User not found.'}, 404
 
 		def post(self, id):
+			try:
+				int(id) == id
+			except:
+				return {'message': 'Value not supported.'}, 404
 			if UsersEntity.find_user(id):
 				# Bad request
 				return {'message': 'User id {} already exists.'.format(id)}, 400
-
+			
 			data = request.get_json()
 			user = UsersEntity(**data)
 			user.id = id
@@ -106,8 +122,32 @@ def setup_route(app):
 				user.save_user()
 			except:
 				# Internal Server Error
-				return {'message': 'An internal error occurred trying to delete User.'}, 500
-			return{'message': 'User deleted.'}
+				return {'message': 'An internal error occurred trying to post User.'}, 500
+			return{'message': 'User post.'}
+
+		def put(self, id):
+			data = request.get_json()
+			user = UsersEntity.find_user(id)
+			if user:
+				user.update_user(**data)
+				try:
+					user.save_user()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to save project.'}, 500
+				return user.json(), 200
+			return {'message': 'Project not found.'}, 404
+
+		def delete(self, id):
+			user = UsersEntity.find_user(id)
+			if user:
+				try:
+					user.delete_user()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to delete user.'}, 500
+				return{'message': 'User deleted.'}
+			return {'message': 'User does not exist.'}, 404
 
 
 	class Centers(Resource):
@@ -176,8 +216,8 @@ def setup_route(app):
 
 	api.add_resource(IndexEntity, '/index' )
 	api.add_resource(Projects, '/projects')
-	api.add_resource(Project, '/projects/<int:id>')
+	api.add_resource(Project, '/projects/<id>')
 	api.add_resource(Users, '/users')
-	api.add_resource(User, '/users/<int:id>')
+	api.add_resource(User, '/users/<id>')
 	api.add_resource(Centers, '/costcenters')
-	api.add_resource(Center, '/costcenters/<int:id>')
+	api.add_resource(Center, '/costcenters/<id>')
