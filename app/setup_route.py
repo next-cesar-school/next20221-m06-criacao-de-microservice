@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource, Api
 from app.entity import ProjectEntity, UsersEntity, CostCenterEntity
-from app.errors import error_id_not_int, find_project
+from app.errors import error_id_not_int
 
 
 def setup_route(app):
