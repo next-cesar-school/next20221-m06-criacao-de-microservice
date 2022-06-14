@@ -16,14 +16,15 @@ def setup_route(app):
 			return {'projects': [project.json() for project in ProjectEntity.query.all()]}
 
 		def post(self):
-			data = request.get_json()
-			project = ProjectEntity(**data)
 			try:
+				data = request.get_json()
+				project = ProjectEntity(**data)
 				project.save_project()
+				return project.json()
+
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save project.'}, 500
-			return project.json()
 
 
 	class Project(Resource):
@@ -32,92 +33,92 @@ def setup_route(app):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
+				project = ProjectEntity.find_project(id)
+				if project:
+					return project.json()
+				return {'message': 'Project not found.'}, 404
+
 			except ValueError:
 				return {'message': f'Oops! This ID {id} is not valid'}, 400
 
-			project = ProjectEntity.find_project(id)
-			if project:
-				return project.json()
-			return {'message': 'Project not found.'}, 404
 
 		def post(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
+				if ProjectEntity.find_project(id):
+					# Bad request
+					return {'message': f'Project id {id} already exists.'}, 400
+
+				data = request.get_json()
+				project = ProjectEntity(**data)
+				project.id = id
+				project.save_project()
+				return project.json()
+
 			except ValueError:
 				return {'message': f'Oops! This ID {id} is not valid'}, 400
-
-			if ProjectEntity.find_project(id):
-				# Bad request
-				return {'message': 'Project id {} already exists.'.format(id)}, 400
-			
-			data = request.get_json()
-			project = ProjectEntity(**data)
-			project.id = id
-
-			try:
-				project.save_project()
-			except AttributeError:
-				return {'message': 'Value Error.'}, 404
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save project.'}, 500
-			return project.json()
+
 
 		def put(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
+				data = request.get_json()
+				project = ProjectEntity.find_project(id)
+
+				if project:
+					project.update_project(**data)
+					project.save_project()
+					return project.json(), 200
+				return {'message': 'Project not found.'}, 404
+
 			except ValueError:
 				return {'message': f'Oops! This ID {id} is not valid'}, 400
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to save project.'}, 500
 
-			data = request.get_json()
-			project = ProjectEntity.find_project(id)
-			if project:
-				project.update_project(**data)
-				try:
-					project.save_project()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to save project.'}, 500
-				return project.json(), 200
-			return {'message': 'Project not found.'}, 404
 
 		def delete(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				project = ProjectEntity.find_project(id)
 
-			project = ProjectEntity.find_project(id)
-			if project:
-				try:
+				if project:
 					project.delete_project()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to delete project.'}, 500
-				return{'message': 'Project deleted.'}
-			return {'message': 'Project does not exist.'}, 404
+					return{'message': 'Project deleted.'}
+				return {'message': 'Project does not exist.'}, 404
+
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400				
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to delete project.'}, 500
+
 
 	class Users(Resource):
 
 		def get(self):
-			return {'users': [project.json() for project in UsersEntity.query.all()]}
+			return {'users': [user.json() for user in UsersEntity.query.all()]}
 
 		def post(self):
-			data = request.get_json()
-			user = UsersEntity(**data)
-
-			if UsersEntity.find_user_matricula(user.matricula):
-				return {'message': f'User matricula {user.matricula} already exists.'}, 400
-
 			try:
+				data = request.get_json()
+				user = UsersEntity(**data)
+
+				if UsersEntity.find_user_matricula(user.matricula):
+					return {'message': f'User matricula {user.matricula} already exists.'}, 400
 				user.save_user()
+				return user.json()
+
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save User.'}, 500
-			return user.json()
 
 		
 	class User(Resource):
@@ -126,110 +127,77 @@ def setup_route(app):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				user = UsersEntity.find_user(id)
 
-			user = UsersEntity.find_user(id)
-			if user:
-				return user.json()
-			return {'message': 'User not found.'}, 404
+				if user:
+					return user.json()
+				return {'message': 'User not found.'}, 404
+
+			except ValueError:
+				return {'message': f'Oops! This User ID {id} is not valid'}, 400
+
 
 		def post(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				if UsersEntity.find_user(id):
+					# Bad request
+					return {'message': f'User ID {id} already exists.'}, 400
+				
+				data = request.get_json()
+				user = UsersEntity(**data)
 
-			if UsersEntity.find_user(id):
-				# Bad request
-				return {'message': 'User id {} already exists.'.format(id)}, 400
-			
-			data = request.get_json()
-			user = UsersEntity(**data)
+				if UsersEntity.find_user_matricula(user.matricula):
+					return {'message': f'User matricula {user.matricula} already exists.'}, 400
 
-			if UsersEntity.find_user_matricula(user.matricula):
-				return {'message': f'User matricula {user.matricula} already exists.'}, 400
-
-			user.id = id
-			try:
+				user.id = id
 				user.save_user()
+				return user.json(), 200
+
+			except ValueError:
+				return {'message': f'Oops! This User ID {id} is not valid'}, 400
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to post User.'}, 500
-			return user.json(), 200
+
 
 		def put(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				data = request.get_json()
+				user = UsersEntity.find_user(id)
 
-			data = request.get_json()
-			user = UsersEntity.find_user(id)
-			if user:
-				user.update_user(**data)
-				try:
+				if user:
+					user.update_user(**data)
 					user.save_user()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to save project.'}, 500
-				return user.json(), 200
-			return {'message': 'Project not found.'}, 404
+					return user.json(), 200
+				return {'message': 'User not found.'}, 404
 
+			except ValueError:
+				return {'message': f'Oops! This User ID {id} is not valid'}, 400
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to save user.'}, 500
+
+				
 		def delete(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				user = UsersEntity.find_user(id)
 
-			user = UsersEntity.find_user(id)
-			if user:
-				try:
+				if user:
 					user.delete_user()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to delete user.'}, 500
-				return{'message': 'User deleted.'}
-			return {'message': 'User does not exist.'}, 404
+					return{'message': 'User deleted.'}
+				return {'message': 'User does not exist.'}, 404
 
-		def put(self, id):
-			#error_id_not_int(id)
-			try:
-				int(id) == id
 			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
-
-			data = request.get_json()
-			user = UsersEntity.find_user(id)
-			if user:
-				user.update_user(**data)
-				try:
-					user.save_user()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to save User.'}, 500
-				return user.json(), 200
-			return {'message': 'User not found.'}, 404
-		
-		def delete(self, id):
-			#error_id_not_int(id)
-			try:
-				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
-
-			user = UsersEntity.find_user(id)
-			if user:
-				try:
-					user.delete_user()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to delete user.'}, 500
-				return{'message': 'User deleted.'}
-			return {'message': 'User does not exist.'}, 404
+				return {'message': f'Oops! This User ID {id} is not valid'}, 400
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to delete user.'}, 500
 
 
 	class Centers(Resource):
@@ -238,18 +206,19 @@ def setup_route(app):
 			return {'Cost Centers': [center.json() for center in CostCenterEntity.query.all()]}
 
 		def post(self):
-			data = request.get_json()
-			center = CostCenterEntity(**data)
-
-			if CostCenterEntity.find_center_setor(center.setor):
-				return {'message': f'Cost center sector {center.setor} already exists.'}, 400
-
 			try:
+				data = request.get_json()
+				center = CostCenterEntity(**data)
+
+				if CostCenterEntity.find_center_setor(center.setor):
+					return {'message': f'Cost center sector {center.setor} already exists.'}, 400
 				center.save_center()
+				return center.json()
+
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save cost center.'}, 500
-			return center.json()
+
 
 	class Center(Resource):
 
@@ -257,73 +226,81 @@ def setup_route(app):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				center = CostCenterEntity.find_center(id)
 
-			center = CostCenterEntity.find_center(id)
-			if center:
-				return center.json()
-			return {'message': 'Cost Center not found.'}, 404
+				if center:
+					return center.json()
+				return {'message': 'Cost Center not found.'}, 404
+
+			except ValueError:
+				return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
+
 
 		def post(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
 
-			if CostCenterEntity.find_center(id):
-				# Bad request
-				return {'message': f'Cost center sector {id} already exists.'}, 400
+				if CostCenterEntity.find_center(id):
+					# Bad request
+					return {'message': f'Cost center ID {id} already exists.'}, 400
 
-			data = request.get_json()
-			center = CostCenterEntity(**data)
-			center.id = id
-			try:
+				data = request.get_json()
+				center = CostCenterEntity(**data)
+
+				if CostCenterEntity.find_center_setor(center.setor):
+					return {'message': f'Cost Center sector {center.setor} already exists.'}, 400
+
+				center.id = id
 				center.save_center()
+				return center.json()
+
+			except ValueError:
+				return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
-			return center.json()
 
+			
 		def put(self, id):
 			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				data = request.get_json()
+				center = CostCenterEntity.find_center(id)
 
-			data = request.get_json()
-			center = CostCenterEntity.find_center(id)
-			if center:
-				center.update_center(**data)
-				try:
+				if center:
+					center.update_center(**data)
 					center.save_center()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
-				return center.json(), 200
-			return {'message': 'Cost Center not found.'}, 404
+					return center.json(), 200
+				return {'message': 'Cost Center not found.'}, 404
+
+			except ValueError:
+				return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
+				
 
 		def delete(self, id):
 			#rror_id_not_int(id)
 			try:
 				int(id) == id
-			except ValueError:
-				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				center = CostCenterEntity.find_center(id)
 
-			center = CostCenterEntity.find_center(id)
-			if center:
-				try:
+				if center:
 					center.delete_center()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
-				return{'message': 'Cost Center deleted.'}
-			return {'message': 'Cost Center not found.'}, 404
+					return{'message': 'Cost Center deleted.'}
+				return {'message': 'Cost Center not found.'}, 404
 
+			except ValueError:
+				return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
+			except:
+				# Internal Server Error
+				return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
 
-
+				
+# ENDPOINTS:			
 	api = Api(app)
 
 	api.add_resource(IndexEntity, '/index' )
