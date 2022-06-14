@@ -71,7 +71,7 @@ def setup_route(app):
 					# Internal Server Error
 					return {'message': 'An internal error occurred trying to delete project.'}, 500
 				return{'message': 'Project deleted.'}
-			return {'message': 'Project not found.'}, 404
+			return {'message': 'Project does not exist.'}, 404
 
 	class Users(Resource):
 
@@ -83,7 +83,7 @@ def setup_route(app):
 			user = UsersEntity(**data)
 
 			if UsersEntity.find_user_matricula(user.matricula):
-				return {f'message': 'User matricula {user.matricula} already exists.'}, 400
+				return {'message': f'User matricula {user.matricula} already exists.'}, 400
 
 			try:
 				user.save_user()
@@ -105,13 +105,11 @@ def setup_route(app):
 				# Bad request
 				return {'message': 'User id {} already exists.'.format(id)}, 400
 			
-				
-
 			data = request.get_json()
 			user = UsersEntity(**data)
 
 			if UsersEntity.find_user_matricula(user.matricula):
-				return {'message': 'User matricula {} already exists.'.format(user.matricula)}, 400
+				return {'message': f'User matricula {user.matricula} already exists.'}, 400
 
 			user.id = id
 			try:
@@ -120,6 +118,30 @@ def setup_route(app):
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to delete User.'}, 500
 			return{'message': 'User deleted.'}
+
+		def put(self, id):
+			data = request.get_json()
+			user = UsersEntity.find_user(id)
+			if user:
+				user.update_user(**data)
+				try:
+					user.save_user()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to save User.'}, 500
+				return user.json(), 200
+			return {'message': 'User not found.'}, 404
+		
+		def delete(self, id):
+			user = UsersEntity.find_user(id)
+			if user:
+				try:
+					user.delete_user()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to delete user.'}, 500
+				return{'message': 'User deleted.'}
+			return {'message': 'User does not exist.'}, 404
 
 
 	class Centers(Resource):
@@ -130,6 +152,10 @@ def setup_route(app):
 		def post(self):
 			data = request.get_json()
 			center = CostCenterEntity(**data)
+
+			if CostCenterEntity.find_center_setor(center.setor):
+				return {'message': f'Cost center sector {center.setor} already exists.'}, 400
+
 			try:
 				center.save_center()
 			except:
@@ -148,7 +174,7 @@ def setup_route(app):
 		def post(self, id):
 			if CostCenterEntity.find_center(id):
 				# Bad request
-				return {'message': 'Cost center sector {} already exists.'.format(id)}, 400
+				return {'message': f'Cost center sector {id} already exists.'}, 400
 
 			data = request.get_json()
 			center = CostCenterEntity(**data)
@@ -173,16 +199,16 @@ def setup_route(app):
 				return center.json(), 200
 			return {'message': 'Cost Center not found.'}, 404
 
-	def delete(self, id):
-			center = CostCenterEntity.find_center(id)
-			if center:
-				try:
-					center.delete_center()
-				except:
-					# Internal Server Error
-					return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
-				return{'message': 'Cost Center deleted.'}
-			return {'message': 'Cost Center not found.'}, 404
+		def delete(self, id):
+				center = CostCenterEntity.find_center(id)
+				if center:
+					try:
+						center.delete_center()
+					except:
+						# Internal Server Error
+						return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
+					return{'message': 'Cost Center deleted.'}
+				return {'message': 'Cost Center not found.'}, 404
 
 	api = Api(app)
 

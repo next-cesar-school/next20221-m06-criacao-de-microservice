@@ -47,9 +47,9 @@ class ProjectEntity(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update_project(self, nome, centro_custo, data_inicio, data_fim, status, flag, id_gerente):
+    def update_project(self, nome, id_centro_custo, data_inicio, data_fim, status, flag, id_gerente):
         self.nome = nome
-        self.centro_custo = centro_custo
+        self.id_centro_custo = id_centro_custo
         self.data_inicio = data_inicio
         self.data_fim = data_fim
         self.status = status
@@ -136,7 +136,7 @@ class CostCenterEntity(db.Model):
     __tablename__ = 'cost_center'
 
     id = db.Column(db.Integer, primary_key=True)
-    setor = db.Column(db.String(100))
+    setor = db.Column(db.String(100), unique=True)
 
     user = db.relationship (UsersEntity)
     project = db.relationship (ProjectEntity)
@@ -147,7 +147,7 @@ class CostCenterEntity(db.Model):
 
     def json(self):
         return {
-            'id': self.id,
+            'id' : self.id,
             'setor': self.setor            
         }
     
@@ -159,12 +159,20 @@ class CostCenterEntity(db.Model):
             return center
         return None
     
+    @classmethod
+    def find_center_setor(cls, setor):
+        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
+        center_setor = cls.query.filter_by(setor=setor).first()
+        
+        if center_setor:
+            return center_setor
+        return None
+    
     def save_center(self):
         db.session.add(self)
         db.session.commit()
 
-    def update_center(self, id, setor):
-        self.id = id
+    def update_center(self, setor):
         self.setor = setor
     
     def delete_center(self):
