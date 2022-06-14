@@ -34,13 +34,13 @@ class ProjectEntity(db.Model):
 			'id_gerente': self.id_gerente
 		}
 
-	@classmethod
-	def find_project(cls, id):
-		# SELECT * FROM projects WHERE id(do db) = id(do parametro)
-		project = cls.query.filter_by(id=id).first()
-		if project:
-			return project
-		return None
+	# @classmethod
+	# def find_project(cls, id):
+	# 	# SELECT * FROM projects WHERE id(do db) = id(do parametro)
+	# 	project = cls.query.filter_by(id=id).first()
+	# 	if project:
+	# 		return project
+	# 	return None
 	
 	def save_project(self):
 		db.session.add(self)
