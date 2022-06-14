@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource, Api
 from app.entity import ProjectEntity, UsersEntity, CostCenterEntity
+from app.errors import error_id_not_int
 
 def setup_route(app):
 
@@ -28,16 +29,24 @@ def setup_route(app):
 	class Project(Resource):
 
 		def get(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			project = ProjectEntity.find_project(id)
 			if project:
 				return project.json()
 			return {'message': 'Project not found.'}, 404
 
 		def post(self, id):
+			#error_id_not_int(id)
 			try:
 				int(id) == id
 			except ValueError:
-				return {'message':f'Oops! This ID {id} is not valid'}, 400
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			if ProjectEntity.find_project(id):
 				# Bad request
 				return {'message': 'Project id {} already exists.'.format(id)}, 400
@@ -56,6 +65,12 @@ def setup_route(app):
 			return project.json()
 
 		def put(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			data = request.get_json()
 			project = ProjectEntity.find_project(id)
 			if project:
@@ -69,6 +84,12 @@ def setup_route(app):
 			return {'message': 'Project not found.'}, 404
 
 		def delete(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			project = ProjectEntity.find_project(id)
 			if project:
 				try:
@@ -99,20 +120,27 @@ def setup_route(app):
 			return user.json()
 
 		
-
 	class User(Resource):
 
 		def get(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			user = UsersEntity.find_user(id)
 			if user:
 				return user.json()
 			return {'message': 'User not found.'}, 404
 
 		def post(self, id):
+			#error_id_not_int(id)
 			try:
 				int(id) == id
-			except:
-				return {'message': 'Value not supported.'}, 404
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			if UsersEntity.find_user(id):
 				# Bad request
 				return {'message': 'User id {} already exists.'.format(id)}, 400
@@ -132,6 +160,12 @@ def setup_route(app):
 			return{'message': 'User post.'}
 
 		def put(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			data = request.get_json()
 			user = UsersEntity.find_user(id)
 			if user:
@@ -145,6 +179,12 @@ def setup_route(app):
 			return {'message': 'Project not found.'}, 404
 
 		def delete(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			user = UsersEntity.find_user(id)
 			if user:
 				try:
@@ -156,6 +196,12 @@ def setup_route(app):
 			return {'message': 'User does not exist.'}, 404
 
 		def put(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			data = request.get_json()
 			user = UsersEntity.find_user(id)
 			if user:
@@ -169,6 +215,12 @@ def setup_route(app):
 			return {'message': 'User not found.'}, 404
 		
 		def delete(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			user = UsersEntity.find_user(id)
 			if user:
 				try:
@@ -202,12 +254,24 @@ def setup_route(app):
 	class Center(Resource):
 
 		def get(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			center = CostCenterEntity.find_center(id)
 			if center:
 				return center.json()
 			return {'message': 'Cost Center not found.'}, 404
 
 		def post(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			if CostCenterEntity.find_center(id):
 				# Bad request
 				return {'message': f'Cost center sector {id} already exists.'}, 400
@@ -223,6 +287,12 @@ def setup_route(app):
 			return center.json()
 
 		def put(self, id):
+			#error_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+
 			data = request.get_json()
 			center = CostCenterEntity.find_center(id)
 			if center:
@@ -236,15 +306,23 @@ def setup_route(app):
 			return {'message': 'Cost Center not found.'}, 404
 
 		def delete(self, id):
-				center = CostCenterEntity.find_center(id)
-				if center:
-					try:
-						center.delete_center()
-					except:
-						# Internal Server Error
-						return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
-					return{'message': 'Cost Center deleted.'}
-				return {'message': 'Cost Center not found.'}, 404
+			#rror_id_not_int(id)
+			try:
+				int(id) == id
+			except ValueError:
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
+				
+			center = CostCenterEntity.find_center(id)
+			if center:
+				try:
+					center.delete_center()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
+				return{'message': 'Cost Center deleted.'}
+			return {'message': 'Cost Center not found.'}, 404
+
+
 
 	api = Api(app)
 
