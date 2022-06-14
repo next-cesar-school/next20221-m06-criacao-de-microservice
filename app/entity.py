@@ -69,7 +69,7 @@ class UsersEntity(db.Model):
 	data_nascimento = db.Column(db.String(10))
 	cargo = db.Column(db.String(10))
 	matricula = db.Column(db.String(50), unique=True)
-	status = db.Column(db.String(50))
+	status = db.Column(db.Enum('ativo', 'inativo'))
 	id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
 
 	gerente = db.relationship (ProjectEntity)

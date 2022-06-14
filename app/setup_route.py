@@ -157,7 +157,7 @@ def setup_route(app):
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to post User.'}, 500
-			return{'message': 'User post.'}
+			return user.json(), 200
 
 		def put(self, id):
 			#error_id_not_int(id)
