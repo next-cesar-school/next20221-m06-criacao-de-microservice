@@ -1,4 +1,3 @@
-from enum import Enum
 from app.config_db import db
 from sqlalchemy import ForeignKey
 
@@ -70,7 +69,7 @@ class UsersEntity(db.Model):
 	data_nascimento = db.Column(db.String(10))
 	cargo = db.Column(db.String(10))
 	matricula = db.Column(db.String(50), unique=True)
-	status = db.Column(db.String(50), Enum('ativo', 'inativo'))
+	status = db.Column(db.Enum('ativo', 'inativo'))
 	id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
 
 	gerente = db.relationship (ProjectEntity)
@@ -171,7 +170,7 @@ class CostCenterEntity(db.Model):
 		if center:
 			return center
 		return None
-    
+	
 	@classmethod
 	def find_center_setor(cls, setor):
 		# igual a SELECT * FROM users WHERE id(do db) = id(do parametro)

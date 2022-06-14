@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource, Api
 from app.entity import ProjectEntity, UsersEntity, CostCenterEntity
-from app.errors import error_id_not_int
+
 
 def setup_route(app):
 
@@ -157,7 +157,7 @@ def setup_route(app):
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to post User.'}, 500
-			return{'message': 'User post.'}
+			return user.json(), 200
 
 		def put(self, id):
 			#error_id_not_int(id)
@@ -311,7 +311,7 @@ def setup_route(app):
 				int(id) == id
 			except ValueError:
 				return {'message': f'Oops! This ID {id} is not valid'}, 400
-				
+
 			center = CostCenterEntity.find_center(id)
 			if center:
 				try:
