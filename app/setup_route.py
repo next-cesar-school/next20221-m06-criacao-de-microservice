@@ -8,22 +8,47 @@ def setup_route(app):
 	class IndexEntity(Resource):
 		def get(self):
 			return 'oi'
-
+	
 	class Projects(Resource):
-
+		# Gel all projects
 		def get(self):
 			return {'projects': [project.json() for project in ProjectEntity.query.all()]}
 
+		# Post new project
 		def post(self):
 			data = request.get_json()
 			project = ProjectEntity(**data)
+
 			try:
 				project.save_project()
 			except:
 				# Internal Server Error
-				return {'message': 'An internal error occurred trying to save project.'}, 500
+				return {'message': 'An internal error occurred trying to save Project.'}, 500
 			return project.json()
+			
+		def put(self, id):
+			data = request.get_json()
+			project = ProjectEntity.find_project(id)
+			if project:
+				project.update_project(**data)
+				try:
+					project.save_project()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to save project.'}, 500
+				return project.json(), 200
+			return {'message': 'Project not found.'}, 404
 
+		def delete(self, id):
+			project = ProjectEntity.find_project(id)
+			if project:
+				try:
+					project.delete_project()
+				except:
+					# Internal Server Error
+					return {'message': 'An internal error occurred trying to delete project.'}, 500
+				return{'message': 'Project deleted.'}
+			return {'message': 'Project not found.'}, 404
 
 	class Project(Resource):
 
@@ -37,10 +62,10 @@ def setup_route(app):
 			try:
 				int(id) == id
 			except ValueError:
-				return {'message':f'Oops! This ID {id} is not valid'}, 400
+				return {'message': f'Oops! This ID {id} is not valid'}, 400
 			if ProjectEntity.find_project(id):
 				# Bad request
-				return {'message': 'Project id {} already exists.'.format(id)}, 400
+				return {'message': f'Project id {id} already exists.'}, 400
 			
 			data = request.get_json()
 			project = ProjectEntity(**data)
@@ -96,8 +121,6 @@ def setup_route(app):
 				return {'message': 'An internal error occurred trying to save User.'}, 500
 			return user.json()
 
-		
-
 	class User(Resource):
 
 		def get(self, id):
@@ -113,7 +136,7 @@ def setup_route(app):
 				return {'message': 'Value not supported.'}, 404
 			if UsersEntity.find_user(id):
 				# Bad request
-				return {'message': 'User id {} already exists.'.format(id)}, 400
+				return {'message': f'User id {id} already exists.'}, 400
 			
 			data = request.get_json()
 			user = UsersEntity(**data)
@@ -123,7 +146,7 @@ def setup_route(app):
 			except:
 				# Internal Server Error
 				return {'message': 'An internal error occurred trying to post User.'}, 500
-			return{'message': 'User post.'}
+			return{'message': 'User posted.'}
 
 		def put(self, id):
 			data = request.get_json()
@@ -176,7 +199,7 @@ def setup_route(app):
 		def post(self, id):
 			if CostCenterEntity.find_center(id):
 				# Bad request
-				return {'message': 'Cost center sector {} already exists.'.format(id)}, 400
+				return {'message': f'Cost Center sector {id} already exists.'}, 400
 
 			data = request.get_json()
 			center = CostCenterEntity(**data)
@@ -214,10 +237,11 @@ def setup_route(app):
 
 	api = Api(app)
 
-	api.add_resource(IndexEntity, '/index' )
-	api.add_resource(Projects, '/projects')
-	api.add_resource(Project, '/projects/<id>')
-	api.add_resource(Users, '/users')
-	api.add_resource(User, '/users/<id>')
-	api.add_resource(Centers, '/costcenters')
-	api.add_resource(Center, '/costcenters/<id>')
+	# Perguntar sobre '/' no final do url
+	api.add_resource(IndexEntity, '/', '/index', '/index/')
+	api.add_resource(Projects, '/projects', '/projects/')
+	api.add_resource(Project, '/projects/<id>', '/projects/<id>/')
+	api.add_resource(Users, '/users', '/users/')
+	api.add_resource(User, '/users/<id>', '/users/<id>/')
+	api.add_resource(Centers, '/costcenters', '/costcenters/')
+	api.add_resource(Center, '/costcenters/<id>', '/costcenters/<id>/')

@@ -1,7 +1,17 @@
 from app.config_db import db
 from sqlalchemy import ForeignKey
 
-class ProjectEntity(db.Model):
+#colocar methodos comuns aqui
+class CommonMethods():
+	# @classmethod
+	def find_project(cls, id):
+		# SELECT * FROM projects WHERE id(do db) = id(do parametro)
+		project = cls.query.filter_by(id=id).first()
+		if project:
+			return project
+		return None
+
+class ProjectEntity(db.Model, CommonMethods):
 	__tablename__ = 'projects'
 
 	id = db.Column(db.Integer, primary_key=True)
@@ -34,13 +44,15 @@ class ProjectEntity(db.Model):
 			'id_gerente': self.id_gerente
 		}
 
-	@classmethod
-	def find_project(cls, id):
-		# SELECT * FROM projects WHERE id(do db) = id(do parametro)
-		project = cls.query.filter_by(id=id).first()
-		if project:
-			return project
-		return None
+	# @classmethod
+	# def find_project(cls, id):
+	# 	# SELECT * FROM projects WHERE id(do db) = id(do parametro)
+	# 	project = cls.query.filter_by(id=id).first()
+	# 	if project:
+	# 		return project
+	# 	return None
+
+	super().find_project()
 	
 	def save_project(self):
 		db.session.add(self)
