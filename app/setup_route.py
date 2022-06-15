@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource, Api
-from app.entity import ProjectEntity, UsersEntity, CostCenterEntity
+from app.entity import ProjectEntity, UsersEntity, CostCenterEntity, ProjectUserEntity
+from app.config_db import db
 
 
 def setup_route(app):
@@ -273,6 +274,36 @@ def setup_route(app):
                 # Internal Server Error
                 return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
 
+    class ProjectsUsers(Resource):
+
+        def get(self):
+            return {'projects users': [project_user.json() for project_user in ProjectUserEntity.query.all()]}
+    
+    class ProjectsIDUsers(Resource):
+
+        def get(self, id):
+            try:
+                int(id) == id
+                project_user = ProjectUserEntity.find_project_user(id)
+                if project_user:
+                    return project_user.json()
+                return {'message': 'Cost Center not found.'}, 404
+            except ValueError:
+                return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
+
+        def post(self, id):
+            try:
+                data = request.get_json()
+                project_user = ProjectUserEntity(**data)
+                project_user.project_id = id
+                project_user.save_project_user()
+                return project_user.json()
+
+            except:
+                # Internal Server Error
+                return {'message': 'An internal error occurred trying to save project.'}, 500
+
+
 # ENDPOINTS:
     api = Api(app)
     api.add_resource(IndexEntity, '/index', '/index/')
@@ -282,3 +313,5 @@ def setup_route(app):
     api.add_resource(User, '/users/<id>', '/users/<id>/')
     api.add_resource(Centers, '/costcenters', '/costcenters/')
     api.add_resource(Center, '/costcenters/<id>', '/costcenters/<id>/')
+    api.add_resource(ProjectsUsers, '/projects/users')
+    api.add_resource(ProjectsIDUsers, '/projects/<id>/users')
