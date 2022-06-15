@@ -285,20 +285,29 @@ def setup_route(app):
             try:
                 int(id) == id
                 project_user = ProjectUserEntity.find_project_user(id)
-                if project_user:
-                    return project_user.json()
-                return {'message': 'Cost Center not found.'}, 404
+                list_users = [item.user_id for item in project_user]
+                dict_users = {}
+                contador = 1
+                for id in list_users:
+                    name = UsersEntity.find_user(id)
+                    dict_users['user ' + str(contador)] = name.json()
+                    contador += 1
+                return {f'USERS FROM PROJECT ID {id}' : dict_users}
             except ValueError:
-                return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
+                return {'message': f'Oops! This Project ID {id} is not valid'}, 400
+            except:
+                return {'message': 'Project not found.'}, 500
 
         def post(self, id):
             try:
+                int(id) == id
                 data = request.get_json()
                 project_user = ProjectUserEntity(**data)
                 project_user.project_id = id
                 project_user.save_project_user()
                 return project_user.json()
-
+            except ValueError:
+                return {'message': f'Oops! This Project ID {id} is not valid'}, 400
             except:
                 # Internal Server Error
                 return {'message': 'An internal error occurred trying to save project.'}, 500
@@ -313,5 +322,5 @@ def setup_route(app):
     api.add_resource(User, '/users/<id>', '/users/<id>/')
     api.add_resource(Centers, '/costcenters', '/costcenters/')
     api.add_resource(Center, '/costcenters/<id>', '/costcenters/<id>/')
-    api.add_resource(ProjectsUsers, '/projects/users')
-    api.add_resource(ProjectsIDUsers, '/projects/<id>/users')
+    api.add_resource(ProjectsUsers, '/projects/users', '/projects/users/')
+    api.add_resource(ProjectsIDUsers, '/projects/<id>/users', '/projects/<id>/users/')

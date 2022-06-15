@@ -22,9 +22,10 @@ class ProjectUserEntity(db.Model):
         db.session.add(self)
         db.session.commit()
     
-    def find_project_user(cls, project_id):
+    @classmethod
+    def find_project_user(cls, id):
         # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
-        project_user = cls.query.filter_by(project_id=project_id)
+        project_user = cls.query.filter_by(project_id=id).all()
         if project_user:
             return project_user
         return None
