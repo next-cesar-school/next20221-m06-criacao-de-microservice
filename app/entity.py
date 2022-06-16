@@ -23,13 +23,24 @@ class ProjectUserEntity(db.Model):
         db.session.commit()
     
     @classmethod
-    def find_project_user(cls, id):
+    def find_project_all_users(cls, id):
         # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
         project_user = cls.query.filter_by(project_id=id).all()
         if project_user:
             return project_user
         return None
+    
+    @classmethod
+    def find_project_by_user(cls, id, id2):
+        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
+        project_user = cls.query.filter_by(project_id=id, user_id = id2).first()
+        if project_user:
+            return project_user
+        return None
 
+    def delete_project_user(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class ProjectEntity(db.Model):
     __tablename__ = 'projects'

@@ -45,7 +45,7 @@ def setup_route(app):
             # error_id_not_int(id)
             try:
                 int(id) == id
-                id <= 0
+                int(id) > 0
                 if ProjectEntity.find_project(id):
                     # Bad request
                     return {'message': f'Project id {id} already exists.'}, 400
@@ -136,7 +136,7 @@ def setup_route(app):
             # error_id_not_int(id)
             try:
                 int(id) == id
-                id <= 0
+                int(id) > 0
                 if UsersEntity.find_user(id):
                     # Bad request
                     return {'message': f'User ID {id} already exists.'}, 400
@@ -225,7 +225,7 @@ def setup_route(app):
             # error_id_not_int(id)
             try:
                 int(id) == id
-                id <= 0
+                int(id) > 0
                 if CostCenterEntity.find_center(id):
                     # Bad request
                     return {'message': f'Cost center ID {id} already exists.'}, 400
@@ -278,21 +278,21 @@ def setup_route(app):
 
         def get(self):
             return {'projects users': [project_user.json() for project_user in ProjectUserEntity.query.all()]}
-    
+
     class ProjectsIDUsers(Resource):
 
         def get(self, id):
             try:
                 int(id) == id
-                project_user = ProjectUserEntity.find_project_user(id)
+                project_user = ProjectUserEntity.find_project_all_users(id)
                 list_users = [item.user_id for item in project_user]
                 dict_users = {}
                 contador = 1
-                for id in list_users:
-                    name = UsersEntity.find_user(id)
+                for id_user in list_users:
+                    name = UsersEntity.find_user(id_user)
                     dict_users['user ' + str(contador)] = name.json()
                     contador += 1
-                return {f'USERS FROM PROJECT ID {id}' : dict_users}
+                return {f'USERS FROM PROJECT ID {id}': dict_users}
             except ValueError:
                 return {'message': f'Oops! This Project ID {id} is not valid'}, 400
             except:
@@ -310,7 +310,32 @@ def setup_route(app):
                 return {'message': f'Oops! This Project ID {id} is not valid'}, 400
             except:
                 # Internal Server Error
-                return {'message': 'An internal error occurred trying to save project.'}, 500
+                return {'message': 'An internal error occurred trying to save user in project.'}, 500
+            
+        
+        def delete(self, id, id2):
+
+            try:
+                int(id) == id
+                int(id2) == id2
+                if int(id) <= 0:
+                    return {'message': f'Oops! The Project ID {id} is not valid'}, 400
+                elif int(id2) <= 0:
+                    return {'message': f'Oops! The User ID {id2} is not valid'}, 400
+                project_user = ProjectUserEntity.find_project_by_user(id, id2)
+                if project_user:
+                    project_user.delete_project_user()
+                    return{'message': f'User ID {id2} deleted from Project ID {id}.'}
+                return {'message': 'User ID not found in this Project.'}, 404
+            except ValueError:
+                try:
+                    int(id) == id
+                    return {'message': f'Oops! The User ID {id2} is not valid'}, 400
+                except:
+                    return {'message': f'Oops! The Project ID {id} is not valid'}, 400
+            except:
+                # Internal Server Error
+                return {'message': f'An internal error occurred trying to delete User ID {id2} from Project ID {id}.'}, 500
 
 
 # ENDPOINTS:
@@ -323,4 +348,5 @@ def setup_route(app):
     api.add_resource(Centers, '/costcenters', '/costcenters/')
     api.add_resource(Center, '/costcenters/<id>', '/costcenters/<id>/')
     api.add_resource(ProjectsUsers, '/projects/users', '/projects/users/')
-    api.add_resource(ProjectsIDUsers, '/projects/<id>/users', '/projects/<id>/users/')
+    api.add_resource(ProjectsIDUsers, '/projects/<id>/users',
+                     '/projects/<id>/users/', '/projects/<id>/users/<id2>', '/projects/<id>/users/<id2>/')
