@@ -6,7 +6,6 @@ from app.config_db import db
 
 def setup_route(app):
 
-    # Este rota é para designar o menu inicial. Feito no Angular?
     class IndexEntity(Resource):
         def get(self):
             return 'oi'
@@ -24,13 +23,13 @@ def setup_route(app):
                 return project.json()
 
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save project.'}, 500
 
     class Project(Resource):
 
         def get(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 project = ProjectEntity.find_project(id)
@@ -42,12 +41,12 @@ def setup_route(app):
                 return {'message': f'Oops! This ID {id} is not valid'}, 400
 
         def post(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 int(id) > 0
                 if ProjectEntity.find_project(id):
-                    # Bad request
+                    
                     return {'message': f'Project id {id} already exists.'}, 400
 
                 data = request.get_json()
@@ -59,11 +58,11 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save project.'}, 500
 
         def put(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 data = request.get_json()
@@ -78,11 +77,11 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save project.'}, 500
 
         def delete(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 project = ProjectEntity.find_project(id)
@@ -95,7 +94,7 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to delete project.'}, 500
 
     class Users(Resource):
@@ -114,13 +113,13 @@ def setup_route(app):
                 return user.json()
 
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save User.'}, 500
 
     class User(Resource):
 
         def get(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 user = UsersEntity.find_user(id)
@@ -133,12 +132,11 @@ def setup_route(app):
                 return {'message': f'Oops! This User ID {id} is not valid'}, 400
 
         def post(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 int(id) > 0
-                if UsersEntity.find_user(id):
-                    # Bad request
+                if UsersEntity.find_user(id):                  
                     return {'message': f'User ID {id} already exists.'}, 400
 
                 data = request.get_json()
@@ -154,11 +152,10 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This User ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to post User.'}, 500
 
         def put(self, id):
-            # error_id_not_int(id)
             try:
                 int(id) == id
                 data = request.get_json()
@@ -173,11 +170,11 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This User ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save user.'}, 500
 
         def delete(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 user = UsersEntity.find_user(id)
@@ -190,7 +187,7 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This User ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to delete user.'}, 500
 
     class Centers(Resource):
@@ -206,12 +203,12 @@ def setup_route(app):
                 center.save_center()
                 return center.json()
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save cost center.'}, 500
 
     class Center(Resource):
         def get(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 center = CostCenterEntity.find_center(id)
@@ -222,12 +219,12 @@ def setup_route(app):
                 return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
 
         def post(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 int(id) > 0
                 if CostCenterEntity.find_center(id):
-                    # Bad request
+                    
                     return {'message': f'Cost center ID {id} already exists.'}, 400
                 data = request.get_json()
                 center = CostCenterEntity(**data)
@@ -239,11 +236,11 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
 
         def put(self, id):
-            # error_id_not_int(id)
+            
             try:
                 int(id) == id
                 data = request.get_json()
@@ -256,11 +253,11 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save Cost Center.'}, 500
 
         def delete(self, id):
-            # rror_id_not_int(id)
+            
             try:
                 int(id) == id
                 center = CostCenterEntity.find_center(id)
@@ -271,7 +268,7 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This Cost Center ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to delete Cost Center.'}, 500
 
     class ProjectsUsers(Resource):
@@ -309,7 +306,7 @@ def setup_route(app):
             except ValueError:
                 return {'message': f'Oops! This Project ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': 'An internal error occurred trying to save user in project.'}, 500
             
         
@@ -334,7 +331,7 @@ def setup_route(app):
                 except:
                     return {'message': f'Oops! The Project ID {id} is not valid'}, 400
             except:
-                # Internal Server Error
+                
                 return {'message': f'An internal error occurred trying to delete User ID {id2} from Project ID {id}.'}, 500
 
 

@@ -32,7 +32,6 @@ class ProjectUserEntity(db.Model):
     
     @classmethod
     def find_project_by_user(cls, id, id2):
-        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
         project_user = cls.query.filter_by(project_id=id, user_id = id2).first()
         if project_user:
             return project_user
@@ -56,8 +55,6 @@ class ProjectEntity(db.Model):
     id_gerente = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     user_allocated = db.relationship(
         'UsersEntity', secondary='projects_users', back_populates='allocated')
-    # user_allocated: Union[list, Any] = relationship(
-#     'UsersEntity', secondary='projects_users', back_populates='user_allocated')
 
     def __init__(self, nome, id_centro_custo, data_inicio, data_fim, status, flag, id_gerente, user_allocated):
         self.nome = nome
@@ -105,9 +102,6 @@ class ProjectEntity(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-# User Entity
-
-
 class UsersEntity(db.Model):
     __tablename__ = 'users'
 
@@ -121,8 +115,6 @@ class UsersEntity(db.Model):
     id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
     allocated = db.relationship(
         'ProjectEntity', secondary='projects_users', back_populates='user_allocated')
-    # allocated: Union[list, Any] = relationship(
-#     'ProjectEntity', secondary='projects_users', back_populates='allocated')
 
     gerente = db.relationship(ProjectEntity)
 
@@ -194,8 +186,6 @@ class UsersEntity(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
-# Centro de Custo Entity
 class CostCenterEntity(db.Model):
     __tablename__ = 'cost_center'
 
@@ -216,7 +206,7 @@ class CostCenterEntity(db.Model):
 
     @classmethod
     def find_center(cls, id):
-        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro) ,,
+        # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
         center = cls.query.filter_by(id=id).first()
         if center:
             return center
