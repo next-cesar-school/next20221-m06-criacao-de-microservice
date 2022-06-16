@@ -49,12 +49,10 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
 
 ## Links úteis
 
-[](https://flask.palletsprojects.com)
-[](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+[Documentação Flask](https://flask.palletsprojects.com)
+[Documentação SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
 
 ## ✒️ Autores
-
-### Alunos
 
 <table>
   <tr>
@@ -101,7 +99,7 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
   </tr>
 </table>
 
-### Mentores
+## 🎁 Agradecimentos
 
 <table>
   <tr>
@@ -122,6 +120,5 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
       </a>
     </td>
 
-## 🎁 Agradecimentos
 
 
