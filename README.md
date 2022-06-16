@@ -33,7 +33,7 @@ Criação de um microserviço que gerencia a criação e manutenção de novos p
 
 ## 💻 Como executar o projeto
 
-Antes de iniciar a aplicação é necessário a instalação das seguintes ferramentas: Git e VSCode. Além disso, a criação do banco de dados "project_manager" no MySQL
+Antes de iniciar a aplicação é necessário a instalação das seguintes ferramentas: Git e VSCode. Além disso, a criação do banco de dados "project_manager" no MySQL.
 
     
     # Clone este repositório
@@ -107,7 +107,7 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
 
 ## 🎁 Agradecimentos
 
-Agradecemos a toda equipe do programa NExT, realizado pela CESAR School, em especial aos nossos monitores Bruno Fernando e Pedro Victor que se manteram sempre dispostos a nos auxiliar com quaisquer dificuldades durante o desenvolvimento do projeto, além de contribuirem ativamente com o nosso desenvolvimento, não só como alunos, mas como desenvolvedores. 
+Agradecemos a toda equipe do programa NExT, realizado pela CESAR School, em especial aos nossos monitores Bruno Fernando e Pedro Victor que se manteram sempre dispostos a nos auxiliar com quaisquer dificuldades durante a elaboração do projeto, além de contribuirem ativamente com o nosso desenvolvimento, não só como alunos, mas como desenvolvedores. 
 
 <table>
   <tr>
