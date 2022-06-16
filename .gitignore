@@ -1,4 +1,5 @@
 venv/
 Templates/
+templates/
 app/__pycache__/
 __pycache__/
