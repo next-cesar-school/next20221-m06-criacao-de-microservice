@@ -1,5 +1,6 @@
 from app.config_db import db
 from sqlalchemy import ForeignKey
+import app.constants as const
 
 
 class ProjectUserEntity(db.Model):
@@ -21,7 +22,7 @@ class ProjectUserEntity(db.Model):
     def save_project_user(self):
         db.session.add(self)
         db.session.commit()
-    
+
     @classmethod
     def find_project_all_users(cls, id):
         # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
@@ -29,10 +30,11 @@ class ProjectUserEntity(db.Model):
         if project_user:
             return project_user
         return None
-    
+
     @classmethod
-    def find_project_by_user(cls, id, id2):
-        project_user = cls.query.filter_by(project_id=id, user_id = id2).first()
+    def find_project_by_user(cls, id_project, id_user):
+        project_user = cls.query.filter_by(
+            project_id=id_project, user_id=id_user).first()
         if project_user:
             return project_user
         return None
@@ -41,40 +43,40 @@ class ProjectUserEntity(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class ProjectEntity(db.Model):
     __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(100))
-    id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
-    data_inicio = db.Column(db.String(10))
-    data_fim = db.Column(db.String(10))
-    status = db.Column(db.Enum('iniciado', 'on-hold',
-                       'finalizado', 'em aprovação'))
-    flag = db.Column(db.Enum('vermelho', 'amarelo', 'verde'))
-    id_gerente = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(const.CHARS_NAME))
+    id_cost_center = db.Column(db.Integer, ForeignKey('cost_center.id'))
+    start_date = db.Column(db.String(const.CHARS_DATE))
+    end_date = db.Column(db.String(const.CHARS_DATE))
+    status = db.Column(db.Enum('ongoing', 'on hold', 'finished', 'on approval'))
+    flag = db.Column(db.Enum('red', 'yellow', 'green'))
+    id_manager = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     user_allocated = db.relationship(
-        'UsersEntity', secondary='projects_users', back_populates='allocated')
+        'UsersEntity', secondary='projects_users', back_populates='allocations')
 
-    def __init__(self, nome, id_centro_custo, data_inicio, data_fim, status, flag, id_gerente, user_allocated):
-        self.nome = nome
-        self.id_centro_custo = id_centro_custo
-        self.data_inicio = data_inicio
-        self.data_fim = data_fim
+    def __init__(self, name, id_cost_center, start_date, end_date, status, flag, id_manager):
+        self.name = name
+        self.id_cost_center = id_cost_center
+        self.start_date = start_date
+        self.end_date = end_date
         self.status = status
         self.flag = flag
-        self.id_gerente = id_gerente
+        self.id_manager = id_manager
 
     def json(self):
         return {
             'id': self.id,
-            'nome': self.nome,
-            'id_centro_custo': self.id_centro_custo,
-            'data_inicio': self.data_inicio,
-            'data_fim': self.data_fim,
+            'name': self.name,
+            'id_cost_center': self.id_cost_center,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
             'status': self.status,
             'flag': self.flag,
-            'id_gerente': self.id_gerente,
+            'id_manager': self.id_manager,
         }
 
     @classmethod
@@ -89,54 +91,56 @@ class ProjectEntity(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update_project(self, nome, id_centro_custo, data_inicio, data_fim, status, flag, id_gerente):
-        self.nome = nome
-        self.id_centro_custo = id_centro_custo
-        self.data_inicio = data_inicio
-        self.data_fim = data_fim
+    def update_project(self, name, id_cost_center, start_date, end_date, status, flag, id_manager):
+        self.name = name
+        self.id_cost_center = id_cost_center
+        self.start_date = start_date
+        self.end_date = end_date
         self.status = status
         self.flag = flag
-        self.id_gerente = id_gerente
+        self.id_manager = id_manager
 
     def delete_project(self):
         db.session.delete(self)
         db.session.commit()
 
+
 class UsersEntity(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    primeiro_nome = db.Column(db.String(100))
-    ultimo_nome = db.Column(db.String(50))
-    data_nascimento = db.Column(db.String(10))
-    cargo = db.Column(db.String(10))
-    matricula = db.Column(db.String(50), unique=True)
-    status = db.Column(db.Enum('ativo', 'inativo'))
-    id_centro_custo = db.Column(db.Integer, ForeignKey('cost_center.id'))
-    allocated = db.relationship(
+    first_name = db.Column(db.String(const.CHARS_NAME))
+    last_name = db.Column(db.String(const.CHARS_NAME))
+    birth_date = db.Column(db.String(const.CHARS_DATE))
+    function = db.Column(db.String(const.CHARS_NAME))
+    registration_number = db.Column(
+        db.String(const.CHARS_REGISTRATION_NUMBER), unique=True)
+    status = db.Column(db.Enum('active', 'inactive'))
+    id_cost_center = db.Column(db.Integer, ForeignKey('cost_center.id'))
+    allocations = db.relationship(
         'ProjectEntity', secondary='projects_users', back_populates='user_allocated')
 
     gerente = db.relationship(ProjectEntity)
 
-    def __init__(self, primeiro_nome, ultimo_nome, data_nascimento, cargo, matricula, status, id_centro_custo):
-        self.primeiro_nome = primeiro_nome
-        self.ultimo_nome = ultimo_nome
-        self.data_nascimento = data_nascimento
-        self.cargo = cargo
-        self.matricula = matricula
+    def __init__(self, first_name, last_name, birth_date, function, registration_number, status, id_cost_center):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.birth_date = birth_date
+        self.function = function
+        self.registration_number = registration_number
         self.status = status
-        self.id_centro_custo = id_centro_custo
+        self.id_cost_center = id_cost_center
 
     def json(self):
         return {
             'id': self.id,
-            'primeiro_nome': self.primeiro_nome,
-            'ultimo_nome': self.ultimo_nome,
-            'data_nascimento': self.data_nascimento,
-            'cargo': self.cargo,
-            'matricula': self.matricula,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'birth_date': self.birth_date,
+            'function': self.function,
+            'registration_number': self.registration_number,
             'status': self.status,
-            'id_centro_custo': self.id_centro_custo
+            'id_cost_center': self.id_cost_center
         }
 
     @classmethod
@@ -148,12 +152,12 @@ class UsersEntity(db.Model):
         return None
 
     @classmethod
-    def find_user_matricula(cls, matricula):
+    def find_user_registration_number(cls, registration_number):
         # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
-        user_matricula = cls.query.filter_by(matricula=matricula).first()
+        user_registration_number = cls.query.filter_by(registration_number=registration_number).first()
 
-        if user_matricula:
-            return user_matricula
+        if user_registration_number:
+            return user_registration_number
         return None
 
     def save_user(self):
@@ -161,47 +165,48 @@ class UsersEntity(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_user_matricula(cls, matricula):
+    def find_user_registration_number(cls, registration_number):
         # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
-        user_matricula = cls.query.filter_by(matricula=matricula).first()
+        user_registration_number = cls.query.filter_by(registration_number=registration_number).first()
 
-        if user_matricula:
-            return user_matricula
+        if user_registration_number:
+            return user_registration_number
         return None
 
     def save_user(self):
         db.session.add(self)
         db.session.commit()
 
-    def update_user(self, primeiro_nome, ultimo_nome, data_nascimento, cargo, matricula, status, id_centro_custo):
-        self.primeiro_nome = primeiro_nome
-        self.ultimo_nome = ultimo_nome
-        self.data_nascimento = data_nascimento
-        self.cargo = cargo
-        self.matricula = matricula
+    def update_user(self, first_name, last_name, birth_date, function, registration_number, status, id_cost_center):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.birth_date = birth_date
+        self.function = function
+        self.registration_number = registration_number
         self.status = status
-        self.id_centro_custo = id_centro_custo
+        self.id_cost_center = id_cost_center
 
     def delete_user(self):
         db.session.delete(self)
         db.session.commit()
 
+
 class CostCenterEntity(db.Model):
     __tablename__ = 'cost_center'
 
     id = db.Column(db.Integer, primary_key=True)
-    setor = db.Column(db.String(100), unique=True)
+    department_name = db.Column(db.String(const.CHARS_NAME), unique=True)
 
     user = db.relationship(UsersEntity)
     project = db.relationship(ProjectEntity)
 
-    def __init__(self, setor):
-        self.setor = setor
+    def __init__(self, department_name):
+        self.department_name = department_name
 
     def json(self):
         return {
             'id': self.id,
-            'setor': self.setor
+            'department_name': self.department_name
         }
 
     @classmethod
@@ -213,20 +218,20 @@ class CostCenterEntity(db.Model):
         return None
 
     @classmethod
-    def find_center_setor(cls, setor):
+    def find_center_department(cls, department_name):
         # igual a SELECT * FROM users WHERE id(do db) = id(do parametro)
-        center_setor = cls.query.filter_by(setor=setor).first()
+        center_department = cls.query.filter_by(department_name=department_name).first()
 
-        if center_setor:
-            return center_setor
+        if center_department:
+            return center_department
         return None
 
     def save_center(self):
         db.session.add(self)
         db.session.commit()
 
-    def update_center(self, setor):
-        self.setor = setor
+    def update_center(self, department_name):
+        self.department_name = department_name
 
     def delete_center(self):
         db.session.delete(self)
