@@ -1,4 +1,4 @@
-venv
-Templates
-app/__pycache__
-__pycache__
+venv/
+Templates/
+app/__pycache__/
+__pycache__/
