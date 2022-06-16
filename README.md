@@ -1,3 +1,9 @@
+![Repository](https://img.shields.io/github/languages/count/next-cesar-school/next-m06-criacao-de-microservice)
+![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+
 <h1 align="center">Gerenciador de Projetos</h1>
 
 Criação de um microserviço que gerencia a criação e manutenção de novos projetos, a partir de aplicação API.
@@ -49,8 +55,8 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
 
 ## Links úteis
 
-[Documentação Flask](https://flask.palletsprojects.com)
-[Documentação SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+- [Documentação Flask: https://flask.palletsprojects.com ](https://flask.palletsprojects.com)
+- [Documentação SQLAlchemy: https://flask-sqlalchemy.palletsprojects.com/en/2.x/](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
 
 ## ✒️ Autores
 
@@ -101,6 +107,8 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
 
 ## 🎁 Agradecimentos
 
+Agradecemos a toda equipe do programa NExT, realizado pela CESAR School, em especial aos nossos monitores Bruno Fernando e Pedro Victor que se manteram sempre dispostos a nos auxiliar com quaisquer dificuldades durante o desenvolvimento do projeto, além de contribuirem ativamente com o nosso desenvolvimento, não só como alunos, mas como desenvolvedores. 
+
 <table>
   <tr>
     <td align="center">
@@ -119,6 +127,5 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
         </sub>
       </a>
     </td>
-
 
 
