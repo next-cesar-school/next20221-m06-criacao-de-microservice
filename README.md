@@ -33,7 +33,7 @@ Criação de um microserviço que gerencia a criação e manutenção de novos p
 
 ## 💻 Como executar o projeto
 
-Antes de iniciar a aplicação é necessário a instalação das seguintes ferramentas: Git e VSCode. Além disso, a criação do banco de dados "project_manager" no MySQL.
+Antes de iniciar a aplicação é necessário a instalação das seguintes ferramentas: Python, Git e IDE de sua preferência. Além disso, a criação do banco de dados "project_manager" no MySQL.
 
     
     # Clone este repositório
@@ -48,10 +48,14 @@ Antes de iniciar a aplicação é necessário a instalação das seguintes ferra
     # Instale as dependências
     $ pip install requirements.txt
 
+    # Coloque a senha do seu banco de dados na linha especificada abaixo do arquivo "config_general.py"
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:**SuaSenha**@localhost/project_manager'
+
     # Execute a aplicação em modo de desenvolvimento
     $ flask run
 
-    # O servidor inciará na porta:5000 - acesse http://localhost:5000/ 
+    # O servidor iniciará na porta:5000 - acesse http://localhost:5000/index
+
 
 ## Links úteis
 
@@ -120,8 +124,8 @@ Agradecemos a toda equipe do programa NExT, realizado pela CESAR School, em espe
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/bruno-fernando-cesar">
-        <img src="https://pps.whatsapp.net/v/t61.24694-24/171588438_482304789782339_7917223393483284820_n.jpg?stp=dst-jpg_s96x96&ccb=11-4&oh=01_AVwopModvtQqoGDQ2dIGoWGJb4U6Es5aIdVCCmXgejIuKA&oe=62BB1204" width="100px;" alt="Foto de Bruno Fernando GitHub"/><br>
+      <a href="https://github.com/Bruno-Fernando">
+        <img src="https://avatars.githubusercontent.com/u/20926638?v=4" width="100px;" alt="Foto de Bruno Fernando GitHub"/><br>
         <sub>
           <b>Bruno Fernando</b>
         </sub>

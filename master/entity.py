@@ -1,6 +1,6 @@
-from app.config_db import db
+from master.config_db import db
 from sqlalchemy import ForeignKey
-import app.constants as const
+import master.constants as const
 
 
 class ProjectUserEntity(db.Model):

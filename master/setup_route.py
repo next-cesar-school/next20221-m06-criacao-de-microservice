@@ -1,20 +1,23 @@
-from flask import request
+from flask import render_template, request
 from flask_restful import Resource, Api
-from app.entity import ProjectEntity, UsersEntity, CostCenterEntity, ProjectUserEntity
-from app.config_db import db
-import app.constants as const
+from master.entity import ProjectEntity, UsersEntity, CostCenterEntity, ProjectUserEntity
+import master.constants as const
 
 
 def setup_route(app):
 
+    @app.route('/index')
+    def index():
+        return render_template('show_index.html')
+
     class IndexEntity(Resource):
-        def get(self):
-            return 'oi', 200
+        def index():
+            return render_template('show_index.html')
 
     class Projects(Resource):
 
         def get(self):
-            return {'projects': [project.json() for project in ProjectEntity.query.all()]}, 200
+            return {'Projects': [project.json() for project in ProjectEntity.query.all()]}, 200
 
         def post(self):
             try:
@@ -95,7 +98,7 @@ def setup_route(app):
     class Users(Resource):
 
         def get(self):
-            return {'users': [user.json() for user in UsersEntity.query.all()]}, 200
+            return {'Users': [user.json() for user in UsersEntity.query.all()]}, 200
 
         def post(self):
             try:
@@ -193,7 +196,7 @@ def setup_route(app):
                 data = request.get_json()
                 center = CostCenterEntity(**data)
                 if CostCenterEntity.find_center_department(center.department_name):
-                    return const.COST_CENTER_SECTOR_ALREADY_EXISTS
+                    return const.COST_CENTER_DEPARTMENT_ALREADY_EXISTS
                 center.save_center()
                 return center.json(), 200
             except:
@@ -222,7 +225,7 @@ def setup_route(app):
                 data = request.get_json()
                 center = CostCenterEntity(**data)
                 if CostCenterEntity.find_center_department(center.department_name):
-                    return const.COST_CENTER_SECTOR_ALREADY_EXISTS
+                    return const.COST_CENTER_DEPARTMENT_ALREADY_EXISTS
                 center.id = id
                 center.save_center()
                 return center.json(), 200
@@ -266,7 +269,7 @@ def setup_route(app):
     class ProjectsUsers(Resource):
 
         def get(self):
-            return {'projects users': [project_user.json() for project_user in ProjectUserEntity.query.all()]}, 200
+            return {'Projects Users': [project_user.json() for project_user in ProjectUserEntity.query.all()]}, 200
 
     class ProjectsIDUsers(Resource):
 
@@ -329,7 +332,7 @@ def setup_route(app):
 
 # ENDPOINTS:
     api = Api(app)
-    api.add_resource(IndexEntity, '/index', '/index/')
+    # api.add_resource(IndexEntity, '/index', '/index/')
     api.add_resource(Projects, '/projects', '/projects/')
     api.add_resource(Project, '/projects/<id>', '/projects/<id>/')
     api.add_resource(Users, '/users', '/users/')
